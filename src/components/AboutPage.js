@@ -1,9 +1,12 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import '../styles/about-page.css';
+import Codemirror from 'react-codemirror';
 
-// Since this component is simple and static, there's no parent container for it.
-const AboutPage = () => {
+
+class AboutPage extends React.Component {
+
+  render() {
     return (
       <div>
         <h2 className="alt-header">About</h2>
@@ -16,6 +19,6 @@ const AboutPage = () => {
         </p>
       </div>
     );
-};
-
+  }
+}
 export default AboutPage;

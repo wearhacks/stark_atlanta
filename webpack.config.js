@@ -16,6 +16,10 @@ const getPlugins = function (env) {
   };
 
   const plugins = [
+    new webpack.ProvidePlugin({
+                    $: 'jquery',
+                    jQuery: 'jquery'
+                }),
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.DefinePlugin(GLOBALS) //Tells React to build in prod mode. https://facebook.github.io/react/downloads.html
   ];
@@ -50,7 +54,13 @@ const getEntry = function (env) {
 
 const getLoaders = function (env) {
   const loaders = [{ test: /\.js$/, include: path.join(__dirname, 'src'), loaders: ['babel', 'eslint'] },
-                   { test: /\.(jpe?g|png|gif|svg)$/i, loaders: ['file']}];
+                   { test: /\.(jpe?g|png|gif|svg)$/i, loaders: ['file']},
+                   { test: /\.eot/, loader: 'url-loader?limit=100000&mimetype=application/vnd.ms-fontobject' },
+                    { test: /\.woff2(\?\S*)?$/, loader: 'url-loader?limit=100000&mimetype=application/font-woff2' },
+                    { test: /\.woff(\?\S*)?$/, loader: 'url-loader?limit=100000&mimetype=application/font-woff' },
+                    { test: /\.ttf(\?\S*)?$/, loader: 'url-loader?limit=100000&mimetype=application/font-ttf' },
+                    { test: /\.json$/, loader: 'json' }
+                   ];
 
   if (env === productionEnvironment ) {
     // generate separate physical stylesheet for production build using ExtractTextPlugin. This provides separate caching and avoids a flash of unstyled content on load.
@@ -71,7 +81,7 @@ function getConfig(env) {
     target: env === testEnvironment ? 'node' : 'web', // necessary per https://webpack.github.io/docs/testing.html#compile-and-test
     output: {
       path: __dirname + '/dist', // Note: Physical files are only output by the production build task `npm run build`.
-      publicPath: '/',
+      publicPath: 'http://localhost:3000/',
       filename: 'bundle.js'
     },
     plugins: getPlugins(env),

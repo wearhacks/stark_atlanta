@@ -21,11 +21,16 @@
   "author": "Cory House",
   "license": "MIT",
   "dependencies": {
+    "codemirror": "5.13.4",
     "connect-history-api-fallback": "1.1.0",
+    "json-loader": "0.5.4",
+    "lodash": "4.11.1",
     "object-assign": "4.0.1",
-    "react": "15.0.0",
+    "react": "15.0.1",
+    "react-codemirror": "0.2.6",
     "react-dom": "15.0.0",
-    "react-redux": "4.4.0",
+    "react-redux": "4.4.1",
+    "react-rich-markdown": "1.0.1",
     "react-router": "2.0.0",
     "redux": "3.3.1"
   },

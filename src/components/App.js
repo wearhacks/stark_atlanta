@@ -3,9 +3,18 @@ import { Link, IndexLink } from 'react-router';
 
 const App = (props) => {
   return (
+
+
+
     <div>
-      <IndexLink to="/">Home</IndexLink> | <Link to="/About">About</Link>
-      <br/>
+        <div className="ui fixed inverted menu">
+          <div className="ui container">
+            <IndexLink className="ui item" to="/">Stark</IndexLink> 
+            <Link className="ui item"  to="/About">About</Link> 
+             <Link className="ui item" to="/editor"> Code Editor </Link>
+          </div>
+        </div>
+
       {props.children}
     </div>
   );
