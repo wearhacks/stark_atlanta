@@ -7,18 +7,29 @@ $vin-red: #ff0000;
 body {
   background: whitesmoke !important;
 }
-body p{
-    font-family: palatino, georgia, serif;
-    font-size: 20px;
+body{
+    font-family: Merriweather, georgia, serif !important;
+    font-size: 15px !important;
     background-color: #fcfcfc;
     color: #272727;
     line-height: 1.5em;
+    p {
+      font-weight: 100;
+      line-height: 1.7em;
+    }
+    font-weight: 100;
 
+    li {
+      margin-bottom:1em;
+    }
 }
-body {
-  font-family: Merriweather !important;
+h1, h2, h3, h4, h5 {
+    font-family: "adelle-sans", sans-serif !important;
+    line-height: 1.2857em;
+    margin: calc(2rem - 0.14285em) 0em 3rem;
+    font-weight: bold;
+    padding: 0em;
 }
-
 #code-result {
   border:1px solid #EEE;
   width:100%;
@@ -46,30 +57,40 @@ code, kbd, pre, samp {
     border-radius: 4px;
     padding: 1px 7px;
 }
-.ui.segment.instruction {
-  padding: 3em;
+.instruction {
+  margin-top:2em;
+  margin-left: auto;
+  margin-right: auto;
+    background: white;
+    padding: 2em 3em;
+    border-radius: 4px;
+    box-shadow: 0px 0px 40px #EFEFEF;
+
+  .exercises {
+    margin-top: 2em;
+  }
+  .ui.button {
+      margin-top: 2em;
+
+      &:hover {
+        border-color: #2EC1BB;
+      }
+  }
 }
+
 .overflow-container {
-      height: 50vh;
-    overflow-y: scroll;
     padding: 0px 11px;
     border-bottom: 1px solid #CCC;
     box-shadow: inset 0px -10px 10px #CCC;
     margin-left: -1em;
     margin-right: -1em;
 
-    .CodeMirror-scroll { height: auto!important; overflow: visible; }
-    .CodeMirror { height: auto !important;}
 }
 
 .instruction h1.title {
     margin-bottom: 1.4em;
 }
-.ui.grid.celled {
-      height: 100%;
-    margin-top: 0;
-    position: fixed;
-}
+
 #editor .ui.segment.tab {
   padding: 0;
 }
@@ -96,14 +117,86 @@ span.rc-steps-icon.rcicon.rcicon-check:before {
 }
 @import  "../../node_modules/codemirror/lib/codemirror.css";
 
+.ui.menu {
+  display:none;
+}
+div#instructions.left {
+  margin:auto;
+  margin-left:0;
+  left:0;
+}
+div#instructions {
+    padding: 0;
+    padding: 0px 20px;
+    width: 50%;
+    margin-left:25%;
+    margin-right:25%;
+    padding-bottom: 25%;
+    .CodeMirror-scroll { height: auto!important;overflow: visible; }
+    .CodeMirror { 
+       height: auto !important; 
+       font-size: 16px;
+       line-height: 20px;
+       width: 600px; 
+    }
+    .ReactCodeMirror{
+
+      display: block;
+      margin: auto;
+      border-radius: 7px;
+      padding: 6px;
+      background: #282C34;
+      width: 600px;
+      overflow: hidden;
+    }
+
+    h1 {
+      margin-bottom: 1.5em;
+      font-size: 1.5em;
+    }
+
+}
+
 /*
   Code Mirror THEME
 */
-#editor {
+#editor.hidden {
+    display:none;
+    right: -50%;
+    transition: right 0.5s ease-in;
+}
 
+#editor {
+  transition: right 0.5s ease-in;
+  right: 0;
+  width: 50%;
+  position: fixed;
+
+
+  
+}
+.rc-steps .rc-steps-item.rc-steps-status-process .rc-steps-head-inner {
+    border-color: rgb(241, 241, 241);
+    box-shadow: 0px 0px 0px 6px rgba(226, 226, 226, 0.75);
+    background-color: #2db7f5;
+    transition: box-shadow 0.5s ease-in, background 0.5s ease-in;
+}
+
+
+.rc-steps .rc-steps-head {
+    background: #F5F5F5;
+}
+.ui.piled.segment:first-child {
+    min-height: 197px;
+}
+
+/** THEME **/
   .CodeMirror {
-    font-size: 14px;
-    background-color: rgb(40,44,52);
+    font-size: 14px !important;
+
+  }
+  .CodeMirror {
+      background-color: rgb(40,44,52);
     color: white;
   }
   .CodeMirror-cursor {
@@ -204,19 +297,3 @@ span.rc-steps-icon.rcicon.rcicon-check:before {
       background: rgba(204, 204, 204, 0.16);
       opacity: 0.5;
   }
-  
-}
-.rc-steps .rc-steps-item.rc-steps-status-process .rc-steps-head-inner {
-    border-color: rgb(241, 241, 241);
-    box-shadow: 0px 0px 0px 6px rgba(226, 226, 226, 0.75);
-    background-color: #2db7f5;
-    transition: box-shadow 0.5s ease-in, background 0.5s ease-in;
-}
-
-
-.rc-steps .rc-steps-head {
-    background: #F5F5F5;
-}
-.ui.piled.segment:first-child {
-    min-height: 197px;
-}

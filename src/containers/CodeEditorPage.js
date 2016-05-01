@@ -4,19 +4,14 @@ import { bindActionCreators } from 'redux';
 import Codemirror from 'react-codemirror';
 import 'codemirror/mode/xml/xml';
 import 'codemirror/mode/css/css';
-/*import 'codemirror/addon/hint/xml-hint';
-import 'codemirror/addon/hint/html-hint';
-import 'codemirror/addon/lint/html-lint';
-import 'codemirror/addon/hint/show-hint.css';
-import 'codemirror/addon/hint/show-hint.js';
-import 'codemirror/addon/lint/lint.js';
-import 'codemirror/addon/lint/lint.css';*/
+
 window.$ = $;
 window.jQuery = $;
 import '../../node_modules/semantic-ui/dist/semantic.min.js';
 import * as actions from '../actions/codeEditActions';
+import * as exerciseActions from '../actions/exerciseActions';
 import Instruction from '../components/Instruction';
-
+import Progression from '../components/Progression';
 
 export class CodeEditorPage extends Component {
   componentDidMount() {
@@ -35,6 +30,11 @@ export class CodeEditorPage extends Component {
         css_cm.refresh();
     },1);
     [0,1,2,4,5].forEach((i) => cm.addLineClass(i, 'text', 'readonly'));
+  }
+
+  componentDidUpdate() {
+    let elem = $(`#chapter-${this.props.instructions.currentChapter}`)
+
   }
   updateHTMLCode(newCode) {
     this.props.actions.saveHTMLCodeEdits(newCode);
@@ -59,6 +59,12 @@ export class CodeEditorPage extends Component {
    this.iframe.contentWindow.postMessage(doc.getValue(), 'http://localhost:3000');
   }
   
+  getContentLocation() {
+    return "left";
+  }
+  getEditorVisibility() {
+    return "";
+  }
   render() {
     let options = {
         lineNumbers: true,
@@ -68,40 +74,63 @@ export class CodeEditorPage extends Component {
         lineNumbers: true,
         mode: "text/css",
         fixedGutter: true
-    };  
-    return (
-      <div className="ui grid celled">
-        <div id="instructions" className="seven wide column">
-          <Instruction appState={this.props.instructions} />
-        </div>
+    }; 
 
-        <div id="editor" className="nine wide column">
-          <h5>Code Editor</h5>
-          <div className="ui top attached tabular menu">
-            <a className="active item" data-tab="first">index.html</a>
-            <a className="item" data-tab="second">style.css</a>
-            <a className="item" data-tab="third">script.js</a>
+    let chapters = this.props.instructions.chapters; 
+    let currentChapter = this.props.instructions.currentChapter;
+    let currentExercise = this.props.instructions.currentExercise;
+    return (
+      <div>
+        <div className="ui grid celled" >
+          <div id="instructions" className={this.getContentLocation()}>
+            {
+              chapters.filter((_,i) => (i <= currentChapter)).map((chapter, i) => 
+              <Instruction 
+                  chapterID = {i}
+                  chapter = {chapter}
+                  currentExercise = {(currentChapter == i) ? currentExercise : 0 }
+                  completed = {currentChapter !== i}
+                  actions = {this.props.exerciseActions}
+                  ref={(ref) => {if(i == currentChapter)this.currentChapter = ref}} 
+                />)
+            }
+            
           </div>
-          <div className="ui bottom attached active tab segment" data-tab="first">
-            <Codemirror ref={(ref) => this.htmlEditor = ref} value={this.props.appState.htmlCode} onChange={this.updateHTMLCode.bind(this)} options={options} />
+
+          <div id="editor" className={this.getEditorVisibility()}>
+            <h5>Code Editor</h5>
+            <div className="ui top attached tabular menu">
+              <a className="active item" data-tab="first">index.html</a>
+              <a className="item" data-tab="second">style.css</a>
+              <a className="item" data-tab="third">script.js</a>
+            </div>
+            <div className="ui bottom attached active tab segment" data-tab="first">
+              <Codemirror ref={(ref) => this.htmlEditor = ref} value={this.props.appState.htmlCode} onChange={this.updateHTMLCode.bind(this)} options={options} />
+            </div>
+            <div className="ui bottom attached tab segment" data-tab="second">
+              <Codemirror ref={(ref) => this.cssEditor = ref} value={this.props.appState.cssCode} onChange={this.updateCSSCode.bind(this)}  options={optionsCss} />
+            </div>
+            
+            <h5>Preview</h5>
+            <div className="code-preview">
+              <iframe ref={(ref) => this.iframe = ref} id="code-result" src="render.html" allow-same-origin allow-scripts frameborder="0"></iframe>
+            </div>
+            
           </div>
-          <div className="ui bottom attached tab segment" data-tab="second">
-            <Codemirror ref={(ref) => this.cssEditor = ref} value={this.props.appState.cssCode} onChange={this.updateCSSCode.bind(this)}  options={optionsCss} />
-          </div>
-          
-          <h5>Preview</h5>
-          <div className="code-preview">
-            <iframe ref={(ref) => this.iframe = ref} id="code-result" src="render.html" allow-same-origin allow-scripts frameborder="0"></iframe>
-          </div>
-          
         </div>
+        <Progression 
+        chapters={chapters} 
+        currentChapter={currentChapter} 
+        currentExercise={currentExercise} ></Progression>
       </div>
+
     );
   }
 }
 
 CodeEditorPage.propTypes = {
   actions: PropTypes.object.isRequired,
+  exerciseActions: PropTypes.object.isRequired,
   appState: PropTypes.object.isRequired,
   instructions: PropTypes.object.isRequired
 };
@@ -115,7 +144,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators(actions, dispatch)
+    actions: bindActionCreators(actions, dispatch),
+    exerciseActions: bindActionCreators(exerciseActions, dispatch)
   };
 }
 

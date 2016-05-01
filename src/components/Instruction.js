@@ -7,47 +7,85 @@ import '../../node_modules/rc-steps/assets/index.css';
 import Markdown from 'react-markdown';   
 import _ from 'lodash';
 // Destrucuring props for brevity below.
-const Instruction = ({appState}) => {
-  return (
-    <div>
-      <h1 className="title aligned center">{appState.title}</h1>
-      
-        <h4 className="ui horizontal divider header">
-          Instructions
-        </h4>
+class Instruction extends React.Component {
+
+  componentDidUpdate() {
+
+  }
+
+  render () {
+      let isInstruction = this.props.chapter.type == "instruction";
+      let chapter = this.props.chapter;
+      let completed = this.props.completed;
+      let currentExercise = this.props.currentExercise;
+
+      let getExerciseItem = (exercise, i)=>{
+        if (i < currentExercise)
+          return <div className="ui segment current basic disabled">
+                  <i className="ui icon check teal circle"></i> {exercise.text} </div>
+        if (i == currentExercise)
+          return (
+            <div 
+            ref={(ref) => this.currentExercise = ref} 
+            className="ui  segment basic  current ">
+              <i className="ui icon teal circle"/>
+              {exercise.text}
+            </div>)
+        if (i > currentExercise)
+          return (
+            <div className="ui segment basic  disabled">
+              <i className="ui icon teal circle"/>
+              {exercise.text}
+            </div>)
+      }
+
+      let completedButton, exercises;
+      if(!completed) {
+          completedButton = <div className="ui button basic" onClick={this.props.actions.nextChapter}>Continue</div>;
+      }
+      else {
+          completedButton = <div className="ui button basic disabled" onClick={this.props.actions.nextChapter}>Continue</div>;
+      }
+
+      if(!isInstruction) {
+        if(currentExercise !== chapter.exercises.length)
+          completedButton = "";
         
-        <div className="overflow-container">
-          <div className="instruction ui segment">
-            <Markdown source={appState.text} renderers={{CodeBlock: CodeBlock}} />
-          </div>
-        </div>
+        exercises = (
+                <div className="exercises">
+                <h2 className="ui horizontal divider header">
+                  <i className="bar pencil icon"></i>
+                    Exercises
+                </h2>
+                <div className="ui segment basic" >
+                {
+                    chapter.exercises.map((exercise,i) => {
+                      return getExerciseItem(exercise,i);
+                    })
+                }
+                </div></div>)
 
-        <h4 className="ui horizontal divider header">
-          Exercises
-        </h4>
-        <Steps current={appState.currentExercise}>
-        {
-          appState.exercises.tasks.map((exercise,i) => {
-            return <Steps.Step title="" />
-          })
-        }
-        </Steps>
+      }
+      
+      
+      return (
+        <div><div className="instruction" id={'chapter-' + this.props.chapterID}>
+              <h1>{chapter.title}</h1>
+              <Markdown source={chapter.text} renderers={{CodeBlock: CodeBlock}} />
+              {exercises}
+              {completedButton}
+            </div>
+        </div>)
+      }
 
-        {
-          appState.exercises.tasks.map((exercise,i ) => {
-            if (i == appState.currentExercise)
-              return <div className="ui segment current">{exercise.text}</div>
-
-          })
-        }
-        { appState.completed ? <h1 className="ui header teal">Completed!</h1> : null}
-
-    </div>
-  );
-};
+}
 
 Instruction.propTypes = {
-  appState: PropTypes.object.isRequired
+  chapterID: PropTypes.number.isRequired,
+  chapter: PropTypes.object.isRequired,
+  currentExercise: PropTypes.number.isRequired,
+  completed: PropTypes.bool.isRequired,
+  actions: PropTypes.object.isRequired
 };
 
 export default Instruction;

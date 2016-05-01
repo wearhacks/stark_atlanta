@@ -1,12 +1,56 @@
-import {UPDATE_HTML_CODE} from '../constants/ActionTypes';
+import {UPDATE_HTML_CODE, NEXT_CHAPTER} from '../constants/ActionTypes';
 import objectAssign from 'object-assign';
 import Steps from 'rc-steps';
 import _ from 'lodash';
 
 
-const initialState = { 
+const initialState = {
+    currentChapter:0,
+    currentExercise:0,
+    completedModule:false,
+    chapters:[
+{
+    type: "instruction",
+    title: "HTML Reloaded",
+    text: "Recall: the purpose of HTML is to describe what should be rendered by the browser.\nThe easiest way to make an HTML page that we can view at our browser is to create a\nfile that contains HTML code and open it with the browser. We will have you writing some\nHTML shortly *right here* though!"
+},
+{
+    type: "instruction",
+    title: "Hello World!",
+    text: `Some programming traditions are **not** to be taken lightly... let alone being broken. 
+           Writing code that ends up in "Hello world" being displayed on your screen is one of them.
+           Here is a version of "Hello World" in HTML:
+
+ \`\`\`html
+ <!DOCTYPE html>
+ <html>
+     <body>
+         <p>Hello world!</p> 
+     </body>
+ </html>
+ \`\`\`
+
+ `
+},
+{
+    type: "instruction",
+    title: "Hello World Explained",
+    text: `Whoah! Let's see what's going on there:\n\n
+ 1. We are telling the browser that this file's (*doc*ument's) content type is HTML: <!DOCTYPE html>
+    If it helps, remember document + type = doctype!
+ 2. As if the doctype was not enough, we also have an HTML *tag/element*: <html>...</html>
+    All content and annotative data goes in there.
+ 3. Next, we define the *body* of the document. Why a body? Because in HTML pages there is also
+    a head as we will see later.
+ 4. Finally, for the actual content, we define a paragraph inside <body> using the <p> tag. 
+    It contains the text which will be displayed.`
+},
+{ 
 title: "1.2 Creating Tables in HTML",
-text: `Tables are defined with the \`<table>\` tag.
+type: "exercise",
+text: `
+
+Tables are defined with the \`<table>\` tag.
   1. Tables are divided into table rows with the \`<tr>\` tag. 
   2. Table rows are divided into table data with the  \`<td>\` tag.
   3. A table row can also be divided into table headings with the \`<th>\` tag.
@@ -65,9 +109,7 @@ text: `Tables are defined with the \`<table>\` tag.
 </table>
 
   `,
-    exercises: {
-        type: "html",
-        tasks: [
+    exercises: [
             {
                 text: "Create a table element. It will contain transaction entries.", 
                 passHtml: "<table></table>"
@@ -93,21 +135,41 @@ text: `Tables are defined with the \`<table>\` tag.
                 passHtml: "<table><tr><th>Type</th><th>Description</th><th>Amount</th></tr></table>"
             }
         ]
-    },
-    currentExercise:0,
-    completed:false
-  }
+  }]
+};
 export default function instructionState(state = initialState, action) {
-  let parser = new DOMParser();
-  let userDom = parser.parseFromString(action.code, "text/html");
-  let lastExercise = state.exercises.tasks.length;
-  let nextExercise = findCurrentExercise(action.code, userDom, state.exercises.tasks);
+
+  let currentChapter = state.chapters[state.currentChapter];
+  let lastExercise = (currentChapter.type == "instruction") ? 0 : currentChapter.exercises.length;
+      
   switch (action.type) {
+    case NEXT_CHAPTER:
+    {
+      let completedChapter = (lastExercise == state.currentExercise);
+      let completedModule = (state.chapters.length == state.currentChapter);
+      let currentChapterIndex = (completedChapter && !completedModule) ? (state.currentChapter + 1) : state.currentChapter;
+      let currExercise = (completedChapter && !completedModule) ? 0 : state.currExercise;
+      
+      return objectAssign({}, state, { 
+        completedModule: completedModule,
+        currentChapter: currentChapterIndex,
+        currentExercise: 0
+       });
+    }
+
     case UPDATE_HTML_CODE:
+    {
+      let parser = new DOMParser();
+      let userDom = parser.parseFromString(action.code, "text/html");
+      let nextExercise = findCurrentExercise(action.code, 
+        userDom, currentChapter.exercises);
+
       return objectAssign({}, state, { 
         currentExercise: nextExercise,
         completed: nextExercise == lastExercise
        });
+  
+    }
     default:
       return state;
   }
@@ -124,7 +186,7 @@ const compareNode = function(rawCode, enode, unode) {
       //BASE CASE
       let a = (unode.innerHTML === undefined) ? "" : unode.innerHTML;
       let b = (enode.innerHTML === undefined) ? "" : enode.innerHTML;
-      console.log('hello world');
+      
       let regex = new RegExp(`(<${unode.nodeName.toLowerCase()})(.*)(>)(${(a.trim() === "") ? '[\\s\\S]*' : a})(</${unode.nodeName.toLowerCase()}>)`,"mi");
       return unode.tagName === enode.tagName && a.toLowerCase().includes(b.toLowerCase()) && rawCode.match(regex);
     }
