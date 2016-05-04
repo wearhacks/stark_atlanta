@@ -2,8 +2,6 @@ import React, {PropTypes} from 'react';
 import FuelSavingsResults from './FuelSavingsResults';
 import FuelSavingsTextInput from './FuelSavingsTextInput';
 import CodeBlock from './CodeBlock';
-import Steps from 'rc-steps';
-import '../../node_modules/rc-steps/assets/index.css';
 import Markdown from 'react-markdown';   
 import _ from 'lodash';
 // Destrucuring props for brevity below.

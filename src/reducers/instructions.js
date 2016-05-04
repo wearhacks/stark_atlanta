@@ -1,6 +1,5 @@
 import {UPDATE_HTML_CODE, NEXT_CHAPTER} from '../constants/ActionTypes';
 import objectAssign from 'object-assign';
-import Steps from 'rc-steps';
 import _ from 'lodash';
 
 
